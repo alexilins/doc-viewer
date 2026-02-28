@@ -1,0 +1,13 @@
+<mat-toolbar class="menu">
+  <span>{{ document().name }}</span>
+  <div class="controls">
+    <span>{{ scaleFactor() }}</span>
+    <button class="zoom" matMiniFab (click)="onScale(5)">
+      <mat-icon>add</mat-icon>
+    </button>
+    <button class="zoom" matMiniFab (click)="onScale(-5)">
+      <mat-icon>remove</mat-icon>
+    </button>
+    <button matButton="tonal" (click)="onSave()">Save</button>
+  </div>
+</mat-toolbar>

@@ -1,21 +1,14 @@
-<mat-toolbar class="menu">
-  @if (document.hasValue()) {
-    <span>{{ document.value().name }}</span>
-    <div class="controls">
-      <span>{{ scaleFactor() }}</span>
-      <button class="zoom" matMiniFab (click)="scale(5)">
-        <mat-icon>add</mat-icon>
-      </button>
-      <button class="zoom" matMiniFab (click)="scale(-5)">
-        <mat-icon>remove</mat-icon>
-      </button>
-      <button matButton="tonal" (click)="save()">Save</button>
-    </div>
-  }
-</mat-toolbar>
+@if (document.hasValue()) {
+  <app-toolbar
+    [document]="document.value()"
+    [scaleFactor]="scaleFactor()"
+    (save)="save()"
+    (scale)="scale($event)"
+  />
+}
 
-<div class="pages-wrapper">
-  <main class="pages-container" [style.transform]="scaleStyle()">
+<div class="wrapper">
+  <main class="pages-container" [style.width.%]="scaleStyleWidth()">
     @if (document.isLoading()) {
       <mat-spinner />
     } @else {

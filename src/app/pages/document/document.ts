@@ -1,14 +1,12 @@
 import { httpResource } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
-import { MatButton, MatMiniFabButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { MatToolbar } from '@angular/material/toolbar';
+import { Toolbar } from '@components/toolbar/toolbar';
 import { Document as DocumentObject } from '@core/models';
 
 @Component({
   selector: 'app-document',
-  imports: [MatToolbar, MatProgressSpinner, MatIcon, MatMiniFabButton, MatButton],
+  imports: [MatProgressSpinner, Toolbar],
   templateUrl: './document.html',
   styleUrl: './document.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,6 +17,7 @@ export class Document {
 
   readonly scaleFactor = signal(100);
   readonly scaleStyle = computed(() => `scale(${this.scaleFactor() / 100})`);
+  readonly scaleStyleWidth = computed(() => `${this.scaleFactor() + 1}`);
 
   readonly annotations = signal([]);
 
@@ -50,5 +49,10 @@ export class Document {
 
     const positionX = parseFloat(((e.offsetX * 100) / width).toFixed(2));
     const positionY = parseFloat(((e.offsetY * 100) / height).toFixed(2));
+
+    console.log({
+      positionX,
+      positionY,
+    });
   }
 }
