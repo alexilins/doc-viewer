@@ -1,3 +1,44 @@
 :host {
   display: block;
 }
+
+.menu {
+  display: flex;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  .zoom {
+    height: 32px;
+    width: 32px;
+  }
+}
+
+.pages-wrapper {
+  height: calc(100dvh - var(--mat-toolbar-standard-height, 64px));
+  overflow: scroll;
+}
+
+.pages-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px 0;
+
+  justify-content: center;
+  gap: 16px;
+  transform-origin: center top;
+  will-change: transform;
+}
+
+.page {
+  max-width: 100dvw;
+}

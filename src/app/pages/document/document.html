@@ -1,1 +1,33 @@
-<p>document works!</p>,
+<mat-toolbar class="menu">
+  @if (document.hasValue()) {
+    <span>{{ document.value().name }}</span>
+    <div class="controls">
+      <span>{{ scaleFactor() }}</span>
+      <button class="zoom" matMiniFab (click)="scale(5)">
+        <mat-icon>add</mat-icon>
+      </button>
+      <button class="zoom" matMiniFab (click)="scale(-5)">
+        <mat-icon>remove</mat-icon>
+      </button>
+      <button matButton="tonal" (click)="save()">Save</button>
+    </div>
+  }
+</mat-toolbar>
+
+<div class="pages-wrapper">
+  <main class="pages-container" [style.transform]="scaleStyle()">
+    @if (document.isLoading()) {
+      <mat-spinner />
+    } @else {
+      @for (page of document.value()?.pages; track page.number) {
+        <img
+          class="mat-shadow-2 page"
+          [src]="page.imageUrl"
+          alt=""
+          loading="lazy"
+          (click)="addAnnotation($event)"
+        />
+      }
+    }
+  </main>
+</div>
