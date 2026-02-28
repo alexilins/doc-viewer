@@ -1,6 +1,14 @@
+import { isDevMode } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
+import { setupWorker } from 'msw/browser';
 import { App } from './app/app';
+import { appConfig } from './app/app.config';
+import { handlers } from './mocks/handlers';
 
-bootstrapApplication(App, appConfig)
-  .catch((err) => console.error(err));
+if (isDevMode()) {
+  const mswWorker = setupWorker(...handlers);
+
+  mswWorker.start();
+}
+
+bootstrapApplication(App, appConfig).catch((err) => console.error(err));
