@@ -13,13 +13,22 @@
       <mat-spinner />
     } @else {
       @for (page of document.value()?.pages; track page.number) {
-        <img
-          class="mat-shadow-2 page"
-          [src]="page.imageUrl"
-          alt=""
-          loading="lazy"
-          (click)="addAnnotation($event)"
-        />
+        <div class="page-wrapper">
+          <img
+            class="mat-shadow-2 page"
+            [src]="page.imageUrl"
+            alt=""
+            loading="lazy"
+            (click)="addAnnotation($event, page)"
+          />
+
+          @for (annotation of page.annotations; track annotation.id) {
+            <app-annotation
+              [annotation]="annotation"
+              (delete)="deleteAnnotation(page, annotation)"
+            />
+          }
+        </div>
       }
     }
   </main>

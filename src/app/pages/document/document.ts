@@ -1,25 +1,34 @@
 import { httpResource } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import {
+  AnnotationData,
+  AnnotationForm,
+  AnnotationResult,
+} from '@components/annotation-form/annotation-form';
+import { Annotation } from '@components/annotation/annotation';
 import { Toolbar } from '@components/toolbar/toolbar';
-import { Document as DocumentObject } from '@core/models';
+import { Annotation as AnnotationModel, Document as DocumentObject, Page } from '@core/models';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-document',
-  imports: [MatProgressSpinner, Toolbar],
+  imports: [MatProgressSpinner, Toolbar, MatDialogModule, Annotation],
   templateUrl: './document.html',
   styleUrl: './document.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Document {
+  readonly #dialog = inject(MatDialog);
+
   readonly id = input.required<string>();
+
   readonly document = httpResource<DocumentObject>(() => `/api/documents/${this.id()}`);
 
   readonly scaleFactor = signal(100);
   readonly scaleStyle = computed(() => `scale(${this.scaleFactor() / 100})`);
   readonly scaleStyleWidth = computed(() => `${this.scaleFactor() + 1}`);
-
-  readonly annotations = signal([]);
 
   scale(factorDiff: number): void {
     this.scaleFactor.update((value) => value + factorDiff);
@@ -27,17 +36,11 @@ export class Document {
 
   save(): void {
     const document = this.document.value();
-    const annotations = this.annotations();
 
-    // TODO
-    const mergedData = document;
-
-    console.log({
-      mergedData,
-    });
+    console.log({ document });
   }
 
-  addAnnotation(e: PointerEvent): void {
+  addAnnotation(e: PointerEvent, page: Page): void {
     const target = e.target;
 
     if (!target) {
@@ -50,9 +53,61 @@ export class Document {
     const positionX = parseFloat(((e.offsetX * 100) / width).toFixed(2));
     const positionY = parseFloat(((e.offsetY * 100) / height).toFixed(2));
 
-    console.log({
-      positionX,
-      positionY,
+    this.#dialog
+      .open(AnnotationForm, {
+        data: {
+          content: '',
+        } as AnnotationData,
+      })
+      .afterClosed()
+      .pipe(filter((res) => !!res))
+      .subscribe((res: AnnotationResult) => {
+        this.document.update((document) => {
+          if (!document) {
+            return undefined;
+          }
+
+          const pages = document.pages.map((p) => {
+            if (p.number === page.number) {
+              if (!p.annotations) {
+                p.annotations = [];
+              }
+
+              p.annotations.push({
+                id: crypto.randomUUID(),
+                content: res,
+                positionX,
+                positionY,
+              });
+            }
+
+            return p;
+          });
+
+          return {
+            ...document,
+            pages,
+          };
+        });
+      });
+  }
+
+  deleteAnnotation(page: Page, annotation: AnnotationModel): void {
+    this.document.update((document) => {
+      if (!document) {
+        return undefined;
+      }
+
+      return {
+        ...document,
+        pages: document.pages.map((p) => {
+          if (p.number === page.number) {
+            p.annotations = p.annotations?.filter((a) => a.id !== annotation.id);
+          }
+
+          return p;
+        }),
+      };
     });
   }
 }

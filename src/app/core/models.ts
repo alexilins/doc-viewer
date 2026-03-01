@@ -1,9 +1,11 @@
-interface Annotation {
+export interface Annotation {
   id: string;
   content: string;
+  positionX: number;
+  positionY: number;
 }
 
-interface Page {
+export interface Page {
   number: number;
   imageUrl: string;
   annotations?: Annotation[];

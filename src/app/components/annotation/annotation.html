@@ -1,0 +1,11 @@
+<div
+  class="annotation"
+  [style.left.%]="annotation().positionX"
+  [style.top.%]="annotation().positionY"
+>
+  {{ annotation().content }}
+
+  <button class="annotation-delete" matMiniFab (click)="onDelete()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
