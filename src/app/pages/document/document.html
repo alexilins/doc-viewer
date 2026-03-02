@@ -20,12 +20,18 @@
             alt=""
             loading="lazy"
             (click)="addAnnotation($event, page)"
+            (mousemove)="onMouseOver($event)"
+            (mouseleave)="onMouseUp($event)"
+            draggable="false"
           />
 
           @for (annotation of page.annotations; track annotation.id) {
             <app-annotation
+              #annotationEl
               [annotation]="annotation"
+              [id]="annotation.id"
               (delete)="deleteAnnotation(page, annotation)"
+              (mousedown)="onMouseDown($event, annotationEl)"
             />
           }
         </div>

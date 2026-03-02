@@ -13,7 +13,7 @@
 .pages-container {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 48px;
 }
 
 .page-wrapper {
@@ -22,4 +22,5 @@
 
 .page {
   width: 100%;
+  user-select: none;
 }
