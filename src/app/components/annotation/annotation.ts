@@ -28,12 +28,17 @@ export class Annotation {
   readonly annotation = input.required<AnnotationModel>();
   readonly id = input.required<string>();
   readonly delete = output();
+  readonly annotationMouseDown = output<MouseEvent>();
 
   readonly wrapper = viewChild.required<ElementRef<HTMLElement>>('wrapper');
   readonly closeControl = viewChild.required<MatMiniFabButton>('closeControl');
 
   onDelete() {
     this.delete.emit();
+  }
+
+  onMouseDown(e: MouseEvent) {
+    this.annotationMouseDown.emit(e);
   }
 
   dragStart() {

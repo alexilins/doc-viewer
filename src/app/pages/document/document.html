@@ -10,7 +10,7 @@
 <div class="wrapper">
   <main class="pages-container" [style.width.%]="scaleStyleWidth()">
     @if (document.isLoading()) {
-      <mat-spinner />
+      <mat-spinner class="spinner" />
     } @else {
       @for (page of document.value()?.pages; track page.number) {
         <div class="page-wrapper">
@@ -31,7 +31,7 @@
               [annotation]="annotation"
               [id]="annotation.id"
               (delete)="deleteAnnotation(page, annotation)"
-              (mousedown)="onMouseDown($event, annotationEl)"
+              (annotationMouseDown)="onMouseDown($event, annotationEl)"
             />
           }
         </div>

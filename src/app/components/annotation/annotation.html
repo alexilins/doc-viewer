@@ -4,7 +4,9 @@
   [style.left.%]="annotation().positionX"
   [style.top.%]="annotation().positionY"
 >
-  <div class="annotation__content">{{ annotation().content }}</div>
+  <div class="annotation__content" (mousedown)="onMouseDown($event)">
+    {{ annotation().content }}
+  </div>
 
   <button class="annotation__delete" #closeControl matMiniFab (click)="onDelete()">
     <mat-icon>close</mat-icon>
