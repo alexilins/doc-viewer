@@ -1,4 +1,3 @@
-import { httpResource } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -17,7 +16,8 @@ import {
 } from '@components/annotation-form/annotation-form';
 import { Annotation } from '@components/annotation/annotation';
 import { Toolbar } from '@components/toolbar/toolbar';
-import { Annotation as AnnotationModel, Document as DocumentObject, Page } from '@core/models';
+import { Api } from '@core/api';
+import { Annotation as AnnotationModel, Page } from '@core/models';
 import { throttle } from '@core/throttle';
 import { filter } from 'rxjs';
 
@@ -33,17 +33,18 @@ import { filter } from 'rxjs';
 })
 export class Document {
   readonly #dialog = inject(MatDialog);
+  readonly #zone = inject(NgZone);
+  readonly #api = inject(Api);
 
   readonly id = input.required<string>();
 
-  readonly document = httpResource<DocumentObject>(() => `/api/documents/${this.id()}`);
+  readonly document = this.#api.documentResource(this.id);
 
   readonly scaleFactor = signal(100);
   readonly scaleStyle = computed(() => `scale(${this.scaleFactor() / 100})`);
   readonly scaleStyleWidth = computed(() => `${this.scaleFactor() + 1}`);
 
   readonly #draggingEl = signal<null | Annotation>(null);
-  readonly #zone = inject(NgZone);
 
   scale(factorDiff: number) {
     this.scaleFactor.update((value) => value + factorDiff);
@@ -52,15 +53,15 @@ export class Document {
   save() {
     const document = this.document.value();
 
-    console.log({ document });
+    if (!document) {
+      return;
+    }
+
+    this.#api.save(document);
   }
 
   addAnnotation(e: PointerEvent, page: Page) {
     const target = e.target;
-
-    if (!target) {
-      return;
-    }
 
     const width = (target as HTMLImageElement).width;
     const height = (target as HTMLImageElement).height;
@@ -146,15 +147,11 @@ export class Document {
   }
 
   onMouseUp(e: MouseEvent) {
-    if (!this.#draggingEl()) {
+    if (this.#draggingEl() === null) {
       return;
     }
 
     const target = e.target;
-
-    if (!target) {
-      return;
-    }
 
     const width = (target as HTMLImageElement).width;
     const height = (target as HTMLImageElement).height;
